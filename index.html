@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<body>
+	<canvas id="myCanvas" width="400" height="400" style="border:1px solid #000000;display: flex;margin: auto;"></canvas>
+</body>
+<script>
+	const c = document.getElementById("myCanvas");
+const ctx = c.getContext("2d");
+  const COLS =  20
+  const ROWS  = 20
+  const SCREENWIDTH  = 400
+  const SCREENHEIGHT  = 400
+  const CELLWIDTH  = SCREENWIDTH / COLS
+  const CELLHEIGHT  = SCREENHEIGHT / ROWS
+  const FPS =  60
+
+
+  
+  let mat = [];
+  let buffer = []
+  let score = 0;
+
+  for (let i = 0; i < ROWS; i++) {
+  mat[i] = [];
+  buffer[i] = [];
+    for (let j = 0; j < COLS; j++) {
+      mat[i][j] = 0;
+      buffer[i][j] = 0;
+      }
+  }
+
+  setInterval(function loop(){
+
+
+  let rowR = Math.floor(Math.random() * ROWS);
+  let colR = Math.floor(Math.random() * COLS);
+  mat[rowR][colR] = 1;
+  
+  for (let i = ROWS - 2; i >= 0; i--) {
+    for (let j = 0; j < COLS; j++) {
+      if (mat[i][j] == 1 && mat[i + 1][j] == 0) {
+      //original value to 0
+        buffer[i][j] = 0;
+      //moving pixel down
+        buffer[i+1][j] = 1; 
+      }
+    }
+  }
+
+  let rowSum = 0;
+  for (let j = 0; j < ROWS; j++) {
+    rowSum += mat[ROWS - 1][j];
+  }
+
+  if (rowSum == COLS) {
+    for (let j = 0; j < COLS; j++) {
+      buffer[ROWS - 1][j] = 0;
+      score++;
+    }
+  }
+
+  for (let i = 0; i < ROWS; i++) {
+    for (let j = 0; j < COLS; j++) {
+      mat[i][j] = buffer[i][j];
+    }
+  }
+
+  ctx.clearRect(0, 0, SCREENWIDTH, SCREENHEIGHT); 
+  ctx.font = "50px monospace";
+  ctx.fillStyle = "BLUE"; 
+  ctx.fillText(`Score:${score/10}`, SCREENWIDTH/4, SCREENHEIGHT/2);
+
+  for (let row = 0; row < ROWS; row++) {
+    for (let col = 0; col < COLS; col++) {
+      if (mat[row][col] != 0) {
+        ctx.beginPath();
+        ctx.fillStyle =  `rgb(${Math.floor(Math.random() * 255)} ${Math.floor(Math.random() * 255)} ${Math.floor(Math.random() * 255)})`;
+        ctx.rect(col * CELLWIDTH, row * CELLHEIGHT, CELLWIDTH, CELLHEIGHT);
+        // ctx.stroke();
+        ctx.fill(); 
+        
+
+      }
+    }
+  }
+
+  }, 1000 / FPS)
+
+</script>
+</html>
